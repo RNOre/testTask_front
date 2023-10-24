@@ -1,6 +1,6 @@
 <script setup>
 import "primevue/resources/themes/lara-light-indigo/theme.css";
-import UserComponent from "./components/Comments/UserComments/UserComponent.vue";
+import UserComponent from "./components/Comments/UserComments/UserComments.vue";
 import Header from "./components/Header.vue";
 </script>
 

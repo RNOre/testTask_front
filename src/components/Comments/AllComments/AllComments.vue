@@ -24,7 +24,7 @@ export default {
 }
 </script>
 <template>
-  <h2 class="title" @click="console.log(commentsData)">
+  <h2 class="title">
     Комментарии всех пользователей
   </h2>
   <div class="commentItems">

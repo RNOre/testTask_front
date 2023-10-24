@@ -55,7 +55,7 @@ export default {
 
 
       <SplitButton label="Save" icon="pi pi-plus" @click="save" :model="items">
-        <Button @click="save">
+        <Button @click="save" class="profileDropdown">
             <img alt="logo"
                  src="https://yt3.googleusercontent.com/k_LC5oQii8OpIXcQNvOtvWHN9CnBD5V9XdGDIouHuavMj8m-sEkwtMzvm8V8GC8InE5Uwdz6RK4=s900-c-k-c0x00ffffff-no-rj"
                  style="width: 1rem"/>
@@ -71,7 +71,7 @@ export default {
   background-color: white;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  padding: 10px
+  padding-top: 10px;
 }
 
 .navItems {
@@ -96,5 +96,9 @@ a {
 }
 .username{
   margin-left:10px
+}
+.profileDropdown{
+  width:150px;
+  height: 50px
 }
 </style>
