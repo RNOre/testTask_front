@@ -4,7 +4,7 @@ import App from './App.vue'
 import PrimeVue from 'primevue/config';
 import 'primeicons/primeicons.css';
 import Button from "primevue/button"
-import {router} from "./routes/rotes.js";
+import router from "./routes/routes.js";
 import {store} from "./store/index.js";
 
 
