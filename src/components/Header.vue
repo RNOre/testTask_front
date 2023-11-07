@@ -5,6 +5,7 @@ import Toast from "primevue/toast";
 import Menu from 'primevue/menu';
 import Auth from "../../services/auth.js";
 import MegaMenu from 'primevue/megamenu';
+import {mapState} from "vuex";
 
 
 export default {
@@ -14,21 +15,30 @@ export default {
     SplitButton,
     MegaMenu
   },
+  computed: {
+    ...mapState({
+      commentsData: state => state.user,
+      authStatus: state => state.user.auth
+    })
+  },
+  created() {
+    this.$store.dispatch('setHeader')
+  },
   data() {
     return {
       visible: false,
-      menuItems:[
+      menuItems: [
         {
-          label:'Мои комментарии',
-          icon:'pi pi-fw pi-comment',
-          command:()=>{
+          label: 'Мои комментарии',
+          icon: 'pi pi-fw pi-comment',
+          command: () => {
             this.$router.push('/my-comments')
           }
-        }  ,
+        },
         {
-          label:'Все комментарии',
-          icon:'pi pi-fw pi-comments',
-          command:()=>{
+          label: 'Все комментарии',
+          icon: 'pi pi-fw pi-comments',
+          command: () => {
             this.$router.push('/all-comments')
           }
         }
@@ -37,7 +47,10 @@ export default {
         {separator: true},
         {
           label: 'Личный кабинет',
-          icon: 'pi pi-fw pi-user'
+          icon: 'pi pi-fw pi-user',
+          command: () => {
+            this.$router.push('/personal-cabinet')
+          }
         },
         {
           label: 'Выйти',
@@ -45,7 +58,8 @@ export default {
           badge: 2,
           command: () => {
             Auth.logout();
-            this.$router.push('/login')
+            this.$router.push('/login');
+            this.$store.dispatch('logout');
           }
         },
         {separator: true}
@@ -53,20 +67,24 @@ export default {
     }
   },
   methods: {
+    personalCabinet() {
+      this.$router.push('/personal-cabinet')
+    }
   }
 }
 </script>
 <template>
-  <div class="header" >
+  <div class="header" v-if="authStatus">
     <Toast/>
     <MegaMenu :model="menuItems" orientation="horizontal">
       <template #end>
-        <SplitButton label="Save" icon="pi pi-plus" @click="save" :model="items">
+        <SplitButton label="Save" icon="pi pi-plus" @click="personalCabinet" :model="items" raised text
+                     severity="secondary">
           <Button @click="save" class="profileDropdown">
             <img alt="logo"
-                 src="https://yt3.googleusercontent.com/k_LC5oQii8OpIXcQNvOtvWHN9CnBD5V9XdGDIouHuavMj8m-sEkwtMzvm8V8GC8InE5Uwdz6RK4=s900-c-k-c0x00ffffff-no-rj"
+                 :src="commentsData.avatar"
                  style="width: 1rem"/>
-            <span class="ml-2 flex align-items-center font-bold username">admin</span>
+            <span class="ml-2 flex align-items-center font-bold username">{{ commentsData.username }}</span>
           </Button>
         </SplitButton>
       </template>

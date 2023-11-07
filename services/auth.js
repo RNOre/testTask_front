@@ -1,13 +1,13 @@
 import setting from "../src/setting.js";
 
 export default {
-    login(data) {
-        localStorage.setItem(setting.userToken, data)
+    login(token, refreshToken) {
+        localStorage.setItem(setting.userToken, token)
+        localStorage.setItem(setting.refreshToken, refreshToken)
     },
     // authentication status
     authenticated() {
         var t = localStorage.getItem(setting.userToken);
-        // console.log(t);
         return t && t.length > 0;
     },
     getToken() {
@@ -15,5 +15,6 @@ export default {
     },
     logout() {
         localStorage.setItem(setting.userToken, "");
-    }
+        localStorage.setItem(setting.refreshToken, "");
+    },
 }

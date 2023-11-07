@@ -1,25 +1,24 @@
 <script>
 import CommentItem from "../CommentItem.vue";
 import {mapState} from "vuex";
-import axios from "axios";
-import Auth from "../../../../services/auth.js";
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
 
 export default {
   name: 'AllComments',
   methods: {
-    async test(){
-      await axios.get("http://localhost:20080/comment/index")
-    }
-
-    // test(){
-    //   console.log(Auth.getToken());
-    // }
+     test() {
+     }
   },
   components: {
-    CommentItem
+    CommentItem,
+    Loading
   },
   created() {
-    this.$store.dispatch('getAllComments');
+    this.$store.dispatch('getAllComments')
+        .then(setTimeout(() => {
+          this.isLoading = false
+        }, 1000));
   },
   computed: {
     ...mapState({
@@ -27,19 +26,22 @@ export default {
     })
   },
   data() {
-    return {}
+    return {
+      isLoading: true,
+    }
   },
 
 }
 </script>
 <template>
+  <loading v-model:active="isLoading"/>
   <h2 class="title" @click="test">
     Комментарии всех пользователей
   </h2>
   <div class="commentItems">
     <CommentItem v-for="comment in commentsData" :key="comment.id"
                  :username="comment.user.username" :date="comment.date" :avatar="comment.user.avatar"
-                 :text="comment.text"
+                 :text="comment.text" :chmod="false" :status="comment.status"
     />
   </div>
 </template>

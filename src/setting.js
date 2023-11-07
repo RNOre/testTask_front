@@ -1,5 +1,6 @@
 
 export default{
     remoteHost:'http://localhost:20080/',
-    userToken:'tk'
+    userToken:'tk',
+    refreshToken:'rt'
 }

@@ -29,11 +29,22 @@ export default {
         password: this.password,
       }
 
-      await axios.post(
-          'http://localhost:20080/login/check',
-          data)
-          .then(resp => resp.data)
-          .then(resp => this.setToken(resp))
+      try {
+        const response = await axios.post(
+            'http://localhost:20080/auth/login', data);
+
+        const token = response.data.token;
+        const refreshToken = response.data.refreshToken;
+        const id = response.data.user.id;
+        localStorage.setItem('userId', id.toString());
+        Auth.login(token, refreshToken);
+        this.$store.dispatch('login');
+        this.$router.push('/all-comments');
+
+      } catch (e) {
+        console.log(e);
+      }
+
     }
   },
 }
@@ -47,11 +58,11 @@ export default {
         <label for="login">Логин</label>
       </span>
       <span class="p-float-label">
-        <InputText id="password" v-model="password"/>
+        <InputText id="password" v-model="password" type="password"/>
         <label for="password">Пароль</label>
       </span>
       <div class="links">
-        <Button icon="pi pi-google" rounded outlined aria-label="Filter" />
+        <Button icon="pi pi-google" rounded outlined aria-label="Filter"/>
       </div>
       <Button class="enterBtn" @click="inputValue()" label="Войти"/>
       <router-link to="/register">Зарегестрироваться</router-link>
@@ -73,8 +84,9 @@ export default {
   width: 60%;
   gap: 50px;
 }
-.links{
-  display:flex;
-  gap:20px;
+
+.links {
+  display: flex;
+  gap: 20px;
 }
 </style>

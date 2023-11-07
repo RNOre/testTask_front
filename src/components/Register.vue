@@ -6,7 +6,7 @@ import Button from 'primevue/button'
 
 export default {
   name: 'Register',
-  components:{
+  components: {
     InputText,
     Button
   },
@@ -14,7 +14,7 @@ export default {
     return {
       login: '',
       password: '',
-      emailInput:''
+      emailInput: ''
     }
   },
   methods: {
@@ -31,11 +31,28 @@ export default {
         email: this.emailInput
       }
 
-      await axios.post(
-          'http://localhost:20080/login/create',
-          data)
-          .then(resp => resp.data)
-          .then(resp => this.setToken(resp))
+      // await axios.post(
+      //     'http://localhost:20080/auth/login',
+      //     data)
+      //     .then(resp => resp.data)
+      //     .then(resp => this.setToken(resp.token))
+
+      try {
+        const response = await axios.post(
+            'http://localhost:20080/auth/login', data);
+
+        const token = response.data.token;
+        const refreshToken = response.data.refreshToken;
+        const id = response.data.user.id;
+        localStorage.setItem('userId', id.toString());
+        Auth.login(token, refreshToken);
+
+        this.$router.push('/all-comments');
+        this.$store.dispatch('login');
+      } catch (e) {
+        console.log(e);
+      }
+
     }
   },
 }
@@ -54,8 +71,8 @@ export default {
         <label for="email">Email</label>
       </span>
         <span class="p-float-label">
-        <InputText id="password" v-model="password"/>
-        <label for="password">Логин</label>
+        <InputText id="password" v-model="password" type="password"/>
+        <label for="password">Пароль</label>
       </span>
       </div>
       <Button label="Зарегестрироваться" @click="inputValue()"/>
@@ -70,6 +87,7 @@ export default {
   align-items: center;
   justify-content: center
 }
+
 .inputGroup {
   display: flex;
   flex-direction: column;
