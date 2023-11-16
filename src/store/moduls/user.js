@@ -29,7 +29,11 @@ export const user = {
             FIO: '',
             phone: '',
             dateOfBirth: '',
-            city: ''
+            city: '',
+            chartData: {
+                published_comments: 0,
+                hidden_comments: 0
+            }
         }
     },
     mutations: {
@@ -37,6 +41,7 @@ export const user = {
             state.auth = true;
         },
         logout(state) {
+            localStorage.setItem('role', '');
             state.auth = false
         },
         setHeader(state, payload) {
@@ -53,18 +58,22 @@ export const user = {
             state.dateOfBirth = payload.dateOfBirth;
             state.city = payload.city
         },
-        setChangedData(state,payload){
+        setChangedData(state, payload) {
             state.FIO = payload.FIO;
             state.phone = payload.phone;
             state.dateOfBirth = payload.dateOfBirth;
             state.city = payload.city
+        },
+        setChartData(state, payload) {
+            state.chartData.published_comments = payload.published_comments;
+            state.chartData.hidden_comments = payload.hidden_comments;
         }
     },
     actions: {
         async login({commit}, payload) {
             try {
                 const response = await axios.post(
-                    'http://localhost:20080/auth/login', payload)
+                    'auth/login', payload)
 
                 const token = response.data.token;
                 const refreshToken = response.data.refreshToken;
@@ -79,7 +88,7 @@ export const user = {
         async setHeader({commit}) {
             const userId = localStorage.getItem('userId');
             try {
-                axios.get(`http://localhost:20080/userinfo/view/${userId}`, config)
+                axios.get(`userinfo/view/${userId}`, config)
                     // .then(resp=>console.log(resp))
                     .then(resp => commit('setHeader', resp.data))
             } catch (e) {
@@ -87,13 +96,13 @@ export const user = {
             }
         },
         async getUserData({commit}, payload) {
-            axios.get(`http://localhost:20080/userinfo/view/${payload}`, config)
+            axios.get(`userinfo/view/${payload}`, config)
                 .then(resp => commit('setUserData', resp.data))
         },
         async saveChange({commit}, payload) {
             try {
                 const body = payload.body;
-                await axios.put(`http://localhost:20080/userinfo/update/${payload.id}`, body, config)
+                await axios.put(`userinfo/update/${payload.id}`, body, config)
                     .then(resp => commit('setChangedData', resp.data))
             } catch (e) {
                 console.log(e);
@@ -104,11 +113,11 @@ export const user = {
                 const body = {
                     refreshToken: localStorage.getItem('rt')
                 };
-                const resp = await axiosInterceptorInstance.post('http://localhost:20080/auth/refresh', body)
+                const resp = await axiosInterceptorInstance.post('auth/refresh', body)
                     .then(resp => resp.data)
-                if(resp.status){
-                 Auth.login(resp.token, resp.refreshToken)
-                }else{
+                if (resp.status) {
+                    Auth.login(resp.token, resp.refreshToken)
+                } else {
                     Auth.logout();
                     router.push('/login')
                 }
@@ -120,5 +129,9 @@ export const user = {
         logout({commit}) {
             commit('logout')
         },
+        async getChartData({commit}) {
+            // await axios.get('test/index')
+            //     .then(resp => commit('setChartData', resp.data))
+        }
     }
 }

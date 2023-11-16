@@ -45,6 +45,7 @@ export const comment = {
             }
         },
         setNewComment(state, payload) {
+            console.log(payload);
             state.userComments.push(payload);
         },
         deleteComment(state, payload) {
@@ -65,7 +66,7 @@ export const comment = {
         },
         async createComment({commit}, payload) {
             await axios.post('comment/create', payload, config)
-                .then(commit('setNewComment', payload))
+                .then(resp => commit('setNewComment', resp.data))
         },
         async changeCommentStatus({commit}, payload) {
             const body = {
@@ -84,6 +85,32 @@ export const comment = {
         async deleteComment({commit}, payload) {
             await axios.delete(`comment/delete/${payload}`, config)
                 .then(commit('deleteComment', payload))
+        },
+        async createCommentWithFile({commit}, payload) {
+            // console.log(payload.body)
+            const response = await axios.post('comment/create', payload.body, config)
+                .then(resp=>resp.data)
+            commit('setNewComment', response);
+// commentId: response.id
+            payload={...payload};
+            delete payload.body;
+            console.log(payload)
+            let counter = 0;
+            for(let item in payload){
+                if(payload.hasOwnProperty(item)){
+                    counter++;
+                }
+            };
+            for (let i = 0; i < counter; i++) {
+                payload[i]={...payload[i], commentId: response.id}
+                await axios.post('file/create', payload[i])
+                    .then(resp => console.log(resp));
+            }
+
+        },
+        async adminGetComments({commit}, payload){
+            await axiosInterceptorInstance.get('comment/index?expand=user,file&sort=-date', config)
+                .then(resp=>commit('setAllComments', resp.data.items))
         }
     }
 }

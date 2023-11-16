@@ -9,11 +9,13 @@ import {useConfirm} from "primevue/useconfirm";
 import ConfirmDialog from "primevue/confirmdialog";
 import InputText from "primevue/inputtext";
 import Textarea from 'primevue/textarea';
+import FileGroup from "./Admin/FIleGroup.vue";
 
 
 export default {
   name: 'CommentItem',
   components: {
+    FileGroup,
     Card,
     Avatar,
     SpeedDial,
@@ -22,15 +24,23 @@ export default {
     InputText,
     Textarea
   },
-  props: {
-    username: String,
-    avatar: String,
-    text: String,
-    date: String,
-    status: Boolean,
-    chmod: Boolean,
-    id: String
-  },
+  props:
+  [
+    "username",
+    "avatar",
+    "text",
+    "date",
+    "status",
+    "chmod",
+    "id",
+    "admin",
+    "fileData",
+    "fileLink",
+    "fileName",
+    "fileSize",
+    "fileType",
+  ],
+  // },
   data() {
     return {
       editMode: false,
@@ -43,7 +53,7 @@ export default {
           icon: 'pi pi-times',
           command: () => {
             this.editMode = false;
-            this.editText=this.text;
+            this.editText = this.text;
           }
         },
         {
@@ -56,7 +66,7 @@ export default {
             }
             this.$store.dispatch('changeCommentText', payload);
             this.editMode = false;
-            this.editText=this.text;
+            this.editText = this.text;
             this.$toast.add({
               severity: 'success',
               summary: 'Текст изменен',
@@ -130,6 +140,7 @@ export default {
           label: 'Удалить',
           icon: 'pi pi-trash',
           command: () => {
+            this.$store.dispatch('deleteComment', this.id);
             this.$toast.add({
               severity: 'error',
               summary: 'Удаление комментария',
@@ -141,7 +152,13 @@ export default {
       ]
     }
   },
+  created(){
+    console.log(this.fileData)
+  },
   methods: {
+    test(){
+      alert(this.fileData)
+    },
     deleteComment() {
       this.confirm.require({
         message: `Вы уверены, что хотите удалить данный комментарий`,
@@ -169,10 +186,10 @@ export default {
   <Card class="cardItem" v-if="status">
     <template #title>
       <div class="cardHeader">
-        <Avatar v-if="!chmod"
+        <Avatar v-if="!chmod||admin"
                 :image=avatar
                 class="mr-2 avatar" size="xlarge" shape="circle"/>
-        <div v-if="!chmod">{{ username }}</div>
+        <div v-if="!chmod||admin">{{ username }}</div>
         <p class="date">{{ date }}</p>
       </div>
     </template>
@@ -196,6 +213,7 @@ export default {
         <SpeedDial v-else v-if="chmod" :model="items" :radius="70" type="quarter-circle" direction="up-left"
                    :style="{ right: 0, bottom: '-20px'}" showIcon="pi pi-bars" hideIcon="pi pi-times"/>
       </div>
+      <FileGroup v-if="admin" :fileData="fileData" :fileLink="fileLink" :fileName="fileName" :fileSize="fileSize" :fileType="fileType"/>
     </template>
   </Card>
   <Card class="hide cardItem" v-else>
@@ -229,7 +247,7 @@ export default {
                    :style="{ right: 0, bottom: '-20px'}" showIcon="pi pi-bars" hideIcon="pi pi-times"/>
       </div>
     </template>
-
+    <FileGroup v-if="admin||chmod" :fileData="fileData" :fileLink="fileLink" :fileName="fileName" :fileSize="fileSize" :fileType="fileType"/>
   </Card>
 </template>
 <style>

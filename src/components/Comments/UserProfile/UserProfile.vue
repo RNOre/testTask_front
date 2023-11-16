@@ -2,10 +2,12 @@
 import Fieldset from "primevue/fieldset";
 import Divider from "primevue/divider";
 import Image from "primevue/image";
+import Chart from 'primevue/chart';
 import {mapState} from "vuex";
 import InputText from "primevue/inputtext";
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
+import axios from "axios";
 
 export default {
   name: 'UserProfile',
@@ -14,14 +16,13 @@ export default {
     Divider,
     Image,
     InputText,
-    Loading
-  },
-  created() {
-    this.$store.dispatch('getUserData', localStorage.getItem("userId"));
+    Loading,
+    Chart
   },
   computed: {
     ...mapState({
-      userData: state => state.user
+      userData: state => state.user,
+      chartDataFromState: state => state.user.chartData
     })
   },
   data() {
@@ -35,7 +36,22 @@ export default {
       firstname: '',
       lastname: '',
       patronymic: '',
-      isLoading: false
+      isLoading: false,
+      admin: false,
+      // published_comments: null,
+      // hidden_comments: null,
+      chartData: null,
+      chartOptions: null
+    }
+  },
+  created() {
+    this.$store.dispatch('getUserData', localStorage.getItem("userId"));
+
+    if (localStorage.getItem('role') == 'admin') {
+      this.$store.dispatch('getChartData');
+      console.log(this.chartDataFromState)
+      this.admin = true;
+      // this.getChartData();
     }
   },
   methods: {
@@ -64,6 +80,46 @@ export default {
           .then(setTimeout(() => {
             this.isLoading = false
           }, 1500));
+    },
+    async getChartData() {
+      await axios.get('http://localhost:21080/test/index')
+          .then(resp => resp.data)
+          .then(data => [this.chartDataFromState.published_comments, this.chartDataFromState.hidden_comments] = [data.published_comments, data.hidden_comments])
+          .then(this.chartData = this.setChartData())
+          .then(this.chartOptions = this.setChartOptions())
+    },
+
+    async setChartData() {
+      const documentStyle = getComputedStyle(document.body);
+      console.log(this.published_comments);
+      const data = await axios.get('http://localhost:21080/test/index')
+          .then(resp => resp.data);
+      console.log(data);
+      return {
+        labels: ['Опубликованные посты', 'Скрытые посты'],
+        datasets: [
+          {
+            data: [data.published_comments, data.hidden_comments],
+            backgroundColor: [documentStyle.getPropertyValue('--blue-500'), documentStyle.getPropertyValue('--gray-500'), documentStyle.getPropertyValue('--green-500')],
+            hoverBackgroundColor: [documentStyle.getPropertyValue('--blue-400'), documentStyle.getPropertyValue('--gray-400'), documentStyle.getPropertyValue('--green-400')]
+          }
+        ]
+      };
+    },
+    setChartOptions() {
+      const documentStyle = getComputedStyle(document.documentElement);
+      const textColor = documentStyle.getPropertyValue('--text-color');
+
+      return {
+        plugins: {
+          legend: {
+            labels: {
+              usePointStyle: true,
+              color: textColor
+            }
+          }
+        }
+      };
     }
   },
 
@@ -117,6 +173,8 @@ export default {
       <Button class="btn" label="Изменить данные" v-else @click="toggleBtn"/>
     </div>
     <div class="chart">
+      <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-30rem"
+             @click="this.hidden_comments++"/>
     </div>
   </div>
 </template>

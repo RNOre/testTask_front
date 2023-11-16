@@ -1,37 +1,35 @@
 <script>
-import CommentItem from "../CommentItem.vue";
 import {mapState} from "vuex";
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
+import CommentItem from "../CommentItem.vue";
+import Paginator from "primevue/paginator";
 
 export default {
-  name: 'AllComments',
-  methods: {
-     test(event) {
-       console.log(event);
-     }
-  },
+  name: 'Admin',
   components: {
+    Loading,
     CommentItem,
-    Loading
-  },
-  created() {
-    this.$store.dispatch('getAllComments')
-        .then(setTimeout(() => {
-          this.isLoading = false
-        }, 1000));
-  },
-  computed: {
-    ...mapState({
-      commentsData: state => state.comment.comments,
-    })
+    Paginator
   },
   data() {
     return {
       isLoading: true,
     }
   },
-
+  created() {
+    this.$store.dispatch('adminGetComments')
+        .then(setTimeout(() => {
+          this.isLoading = false
+        }, 1000))
+  },
+  computed: {
+    ...mapState({
+      commentsData: state => state.comment.comments
+    })
+  },
+  methods:{
+  }
 }
 </script>
 <template>
@@ -42,8 +40,8 @@ export default {
   <div class="commentItems">
     <CommentItem v-for="comment in commentsData" :key="comment.id"
                  :username="comment.user.username" :date="comment.date" :avatar="comment.user.avatar"
-                 :text="comment.text" :chmod="false" :status="comment.status"
-    />
+                 :text="comment.text" :chmod="true" :status="comment.status" :admin="true" :id="comment.id"
+                 :fileData="comment.file"/>
   </div>
 </template>
 <style scoped>

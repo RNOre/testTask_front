@@ -5,15 +5,16 @@ import Login from "../components/Login.vue";
 import Auth from "../../services/auth.js";
 import Register from "../components/Register.vue";
 import UserProfile from "../components/Comments/UserProfile/UserProfile.vue";
+import Admin from "../components/Comments/Admin/Admin.vue";
 
 
 const routes = [
     {path: '/login', component: Login},
     {path: '/register', component: Register},
     {path: '/personal-cabinet', component: UserProfile, meta: {requireAuth: true}},
-    {path: '/all-comments', component: AllComments, meta: {requireAuth: true}},
+    {path: '/all-comments', component: localStorage.getItem('role')=='admin'? Admin: AllComments, meta: {requireAuth: true}},
     {path: '/my-comments', component: UserComments, meta: {requireAuth: true}},
-
+    {path: '/admin', component: Admin, meta: {requireAuth: true}}
 ]
 const router = createRouter({
     routes,

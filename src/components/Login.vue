@@ -3,6 +3,7 @@ import axios from "axios";
 import Auth from "../../services/auth.js";
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import setting from "../setting.js";
 
 export default {
   name: 'Login',
@@ -31,7 +32,7 @@ export default {
 
       try {
         const response = await axios.post(
-            'http://localhost:20080/auth/login', data);
+                `${setting.remoteHost}auth/login`, data);
 
         const token = response.data.token;
         const refreshToken = response.data.refreshToken;
@@ -39,6 +40,10 @@ export default {
         localStorage.setItem('userId', id.toString());
         Auth.login(token, refreshToken);
         this.$store.dispatch('login');
+        console.log(data.login);
+        if (data.login == 'admin') {
+          localStorage.setItem('role', 'admin');
+        }
         this.$router.push('/all-comments');
 
       } catch (e) {
@@ -66,6 +71,8 @@ export default {
       </div>
       <Button class="enterBtn" @click="inputValue()" label="Войти"/>
       <router-link to="/register">Зарегестрироваться</router-link>
+      <div data-formid="form_w0H6Gtsgo6l1Tmly7rr554OY0eCi2eWB"></div>
+      <div data-formid="form_xZpo7Lu1wSIonDe0uENz4wwtf7uvqaMr"></div>
     </div>
   </div>
 </template>

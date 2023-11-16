@@ -95,34 +95,4 @@ export default {
 .header {
   padding-top: 10px;
 }
-
-/*.navItems {*/
-/*  display: flex;*/
-/*  align-items: center;*/
-/*  padding: 0 100px;*/
-/*  justify-content: space-between;*/
-/*}*/
-
-/*.linkItems h2 {*/
-/*  margin-bottom: 20px;*/
-/*  color: #4B5563*/
-/*}*/
-
-/*.linkItems h2:hover {*/
-/*  margin-bottom: 20px;*/
-/*  color: #6366F1*/
-/*}*/
-
-/*a {*/
-/*  text-decoration: none;*/
-/*}*/
-
-/*.username {*/
-/*  margin-left: 10px*/
-/*}*/
-
-/*.profileDropdown {*/
-/*  width: 150px;*/
-/*  height: 50px*/
-/*}*/
 </style>

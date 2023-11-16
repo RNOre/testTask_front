@@ -30,13 +30,6 @@ export default {
         password: this.password,
         email: this.emailInput
       }
-
-      // await axios.post(
-      //     'http://localhost:20080/auth/login',
-      //     data)
-      //     .then(resp => resp.data)
-      //     .then(resp => this.setToken(resp.token))
-
       try {
         const response = await axios.post(
             'http://localhost:20080/auth/login', data);
